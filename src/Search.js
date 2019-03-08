@@ -7,7 +7,7 @@ function Row(props) {
   return React.createElement(props.type, {}, props.children)
 }
 
-class BookDetails extends React.Component {
+class Search extends React.Component {
 
   state = {
     book: {
@@ -19,9 +19,9 @@ class BookDetails extends React.Component {
 
   componentDidMount() {
     const { handle } = this.props.match.params
-    const { title } = this.props.location.state
+    const { title } = this.props.location.state || 'IOejDAAAQBAJ'
 
-    booksAPI.get(title).then(book => {
+    booksAPI.get('IOejDAAAQBAJ').then(book => {
       console.log(book, "j")
       this.setState({ book })
     })
@@ -39,7 +39,7 @@ class BookDetails extends React.Component {
           <div style={{ backgroundColor: 'white', padding: 15 }} className='two-col-grid'>
             <span style={{ height: 300, margin: 15 }}>
               <img alt={title} src={imageLinks.thumbnail} className={['book-image'].join(' ')}/>
-              <h3>Author{authors.length > 1 && 's'}</h3>
+              <h3>Author</h3>
               {authors.map(author => <Row type="h4">{author}</Row>)}
             </span>
 
@@ -59,4 +59,4 @@ class BookDetails extends React.Component {
 
 }
 
-export default BookDetails
+export default Search

@@ -2,10 +2,12 @@ import React, { Component } from 'react';
 import Bookshelf from './Bookshelf';
 import Sidebar from './Sidebar'
 import BookDetails from './BookDetails.js'
+import Search from './Search.js'
 import { Route, Link } from 'react-router-dom'
 import logo from './images/logo.svg';
 import './App.css';
 import Aux from './hoc/Aux'
+import { read } from './Data/Read.json'
 
 class App extends Component {
 
@@ -25,7 +27,7 @@ class App extends Component {
               </span>
 
               <span className='flex-col-center'>
-                <Link to='/shelf'>Home</Link>
+                <Link to='/'>Home</Link>
               </span>
 
               <span className='flex-col-center'>
@@ -54,27 +56,31 @@ class App extends Component {
 
             <div>
               <h3 className='text-center shelf-heading'>Welcome To</h3>
-              <h1 className='text-center bold shelf-heading'>BOOK IT ALL TO HELL!</h1>
+              <h1 className='text-center bold shelf-heading'>BOOK IT ALL HELL!</h1>
 
               <div className='four-row-grid'>
                   <Route
-                    exact path='/shelf'
+                    exact path='/'
                     render={() => (
                       <Aux>
-                        <h2 className='text-left underline shelf-heading'>Currently Reading</h2>
-                        <Bookshelf/>
+                        <Bookshelf shelf='currentlyReading'/>
                       </Aux>
-
 
                     )}
                   />
 
                 <Route
                   path='/details'
+                  component={BookDetails}
                   render={() => (
-                    <BookDetails
-                      title='Book'
-                    />
+                    <BookDetails />
+                  )}
+                />
+                <Route
+                  path='/search'
+                  component={Search}
+                  render={() => (
+                    <Search />
                   )}
                 />
               </div>
