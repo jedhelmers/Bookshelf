@@ -2,6 +2,15 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom'
 import * as booksAPI from './BooksAPI.js'
 
+function Stars(props) {
+  return (
+    <span>
+      <div className="stars stars-outer">
+        <div className="stars-inner" style={{ width: (props.averageRating * 10) }}></div>
+      </div>
+    </span>
+  )
+}
 
 function Row(props) {
   return React.createElement(props.type, {}, props.children)
@@ -33,14 +42,17 @@ class BookDetails extends React.Component {
   render() {
     // console.log(this.props.location.state)
 
-    const { title, subtitle, description, authors, puslisher, imageLinks } = this.state.book
+    const { title, subtitle, description, authors, puslisher, imageLinks, averageRating } = this.state.book
     return (
       <div className='details'>
           <div style={{ backgroundColor: 'white', padding: 15 }} className='two-col-grid'>
             <span style={{ height: 300, margin: 15 }}>
               <img alt={title} src={imageLinks.thumbnail} className={['book-image'].join(' ')}/>
-              <h3>Author{authors.length > 1 && 's'}</h3>
-              {authors.map(author => <Row type="h4">{author}</Row>)}
+              <Stars averageRating={averageRating}></Stars>
+
+              <div className='help'>
+                by {authors.map(author => <Row type="h4">{author}</Row>)}
+              </div>
             </span>
 
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>

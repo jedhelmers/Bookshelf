@@ -6,33 +6,65 @@ import * as booksAPI from './BooksAPI.js'
 
 class Bookshelf extends Component<Props> {
   state = {
-    read: [],
-    currentlyReading: [],
-    wantToRead: []
+    books: [],
+    shelves: ['read', 'wantToRead', 'currentlyReading']
+
   }
 
   componentDidMount() {
-
+    this.fetchBooksFromDB()
     booksAPI.getAll().then(books => {
       this.setState({
-        read: books.filter(book => book.shelf === 'read'),
-        currentlyReading: books.filter(book => book.shelf === 'currentlyReading'),
-        wantToRead: books.filter(book => book.shelf === 'wantToRead')
+        books: books,
      })
     })
-    console.log(this.state)
-
-// "jAUODAAAQBAJ", "IOejDAAAQBAJ", "1wy49i-gQjIC"
-
   }
 
-  searchAPI = (search) =>
-    booksAPI.search(search)
-      .then(books => {
-        console.log(books)
-        this.setState({ books })
-      })
+  fetchBooksFromDB() {
+    booksAPI.getAll().then((books) => {
 
+        // sift and reformat data before storing it into state
+        // const books = formatData(booksAPIData)
+        this.setState({ books:[...books] });
+    })
+  }
+
+
+  moveBook(book, newShelf, response){
+    // handles adding a book to DB,
+    //  as well as moving existing book to different shelf
+    // console.log(book, newShelf, response);
+    console.log(response[newShelf].indexOf(book.id))
+    // Verify book was updated to newShelf in DB, before updating our state
+    if (response[newShelf].indexOf(book.id) !== -1) {
+
+      book.shelf = newShelf;
+      // remove book, then add it back to array, with its new shelf value
+      this.setState((prevState) => (
+        {
+          books: prevState.books
+          .filter((aBook) => (aBook.id !== book.id))
+          .concat([book])    // `concat([]) returns a new array, for chaining
+        }
+      ))
+
+    }
+  }
+
+  changeShelfHandler(book, newShelf) {
+    // update database
+    booksAPI.update(book, newShelf)
+      .then((response) => {
+
+        // then update state
+        if (newShelf === 'none') {
+          this.deleteBook(book, response);
+        } else {
+          console.log(book, newShelf, response)
+          this.moveBook(book, newShelf, response);
+        }
+      })
+  }
 
   camelToTitle = (str) => str
     .replace(/([A-Z])/g, (match) => ` ${match}`)
@@ -41,25 +73,26 @@ class Bookshelf extends Component<Props> {
   render(){
     return (
       <Aux className={['book-shelf'].join(' ')}>
-        {Object.keys(this.state).map(shelf => (
-          <Aux>
-          <h2 className='text-left underline shelf-heading'>{this.camelToTitle(shelf)}</h2>
-            {this.state[shelf].map((book, index) => (
-              <Book
-                title={book.title}
-                authors={book.authors}
-                key={index}
-                index={index}
-                shelf={shelf}
-                image={book.imageLinks}
-                click={() => this.searchAPI('ar')}
-                averageRating={book.averageRating}
-                id={book.id}
-              />
+        <div></div>
+          {this.state.shelves.map(shelf => (
+            this.state.books.filter(book => (book.shelf === shelf)).map((book, index) => (
+              <Aux>
+                {index === 0 && <h2 className='details underline'>{this.camelToTitle(book.shelf)}</h2>}
+                  <Book
+                    title={book.title}
+                    authors={book.authors}
+                    key={index}
+                    index={index}
+                    shelf={shelf}
+                    image={book.imageLinks}
+                    click={this.changeShelfHandler}
+                    averageRating={book.averageRating}
+                    id={book.id}
+                  />
+              </Aux>
             ))
-          }
-          </Aux>
-        ))}
+          ))}
+
       </Aux>
     )
   }
