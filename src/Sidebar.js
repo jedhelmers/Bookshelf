@@ -1,43 +1,9 @@
 import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
 import Aux from './hoc/Aux'
+import * as booksAPI from './BooksAPI.js'
 
-const featuredBooks = [
-  {
-    section: 'New Arrivals',
-    items: [
-      {
-        title: 'Hello',
-        author: 'Jack Bandit'
-      },
-      {
-        title: 'Hello',
-        author: 'Jack Bandit'
-      }
-    ]
-  },
-  {
-    section: 'Old Shit',
-    items: [
-      {
-        title: 'Hello',
-        author: 'Jack Bandit'
-      },
-      {
-        title: 'Hello',
-        author: 'Jack Bandit'
-      },
-      {
-        title: 'Hello',
-        author: 'Jack Bandit'
-      },
-      {
-        title: 'Hello',
-        author: 'Jack Bandit'
-      }
-    ]
-  }
 
-]
 
 const style = {
   height: '100%',
@@ -49,49 +15,61 @@ const style = {
 }
 
 function FeaturedItem(props) {
+  const { title, authors, imageLinks, id, publishedDate } = props.book
   return (
-    <div className={['featured-card', 'flex-row'].join(' ')}>
-      <span style={{ paddingLeft: 10, width: '100%' }}>
-        <h3>{props.title}</h3>
-        <p>{props.author}</p>
-        <p>{props.author}</p>
-      </span>
-      <div style={{ width: 160, height: '100%', backgroundColor:'lightblue' }}></div>
-
-    </div>
+    <Link to={{
+        pathname: '/details',
+        state: { title: `${id}`},
+      }}
+    >
+      <div className={['featured-card', 'flex-row'].join(' ')}>
+        <span style={{ paddingLeft: 10, width: '100%' }}>
+          <h3 className='bold'>{title}</h3>
+          <div className='help'>
+            by {authors.map(author => <span>{author}</span>)}
+            <div>{(publishedDate).split('-')[0]}</div>
+          </div>
+        </span>
+        <div style={{ width: 100, height: '100%', backgroundColor:'lightblue' }}>
+          <img alt={title} src={imageLinks.thumbnail} className={['book-image'].join(' ')}/>
+        </div>
+      </div>
+    </Link>
   )
 }
 
 
-class Sidebar extends Component {
-  constructor(props) {
-    super(props)
 
-    this.state = { featuredBooks: [...featuredBooks] }
-  }
+class Sidebar extends Component {
+
   state = {
-    content: featuredBooks
+    featuredBooks: []
+  }
+
+  componentDidMount() {
+    this.fetchBooksFromDB()
+    booksAPI.search('art').then(searchResults => {
+      this.setState({ featuredBooks: searchResults })
+    })
+  }
+
+
+  fetchBooksFromDB() {
+    booksAPI.search('ar').then((books) => {
+        // sift and reformat data before storing it into state
+        this.setState({ featuredBooks: books });
+    })
   }
 
   render() {
-    // console.log(this.state.featuredBooks, 'butt')
-    const arry = this.state.featuredBooks.map(book => (
-      <Aux>
-        <h3 className='bold'>{book.section}</h3>
-        {book.items.map(item =>
-          <FeaturedItem
-            title={item.title}
-            author={item.author}
-          />
-        )}
-      </Aux>
-      )
 
-    )
     return (
       <Aux>
         <h2 className='underline'>Pick You</h2>
-        {arry}
+        {this.state.featuredBooks.sort((a,b) => a.publishedDate > b.publishedDate).slice(1,5).map(book => (
+          <FeaturedItem book={book}/>
+
+        ))}
       </Aux>
     )
   }

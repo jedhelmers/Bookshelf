@@ -1,70 +1,12 @@
 import React, { Component } from 'react'
 import Book from './Book'
 import Aux from './hoc/Aux'
-import * as booksAPI from './BooksAPI.js'
+import { Link } from 'react-router-dom'
+// import * as booksAPI from './BooksAPI.js'
 
 
 class Bookshelf extends Component<Props> {
-  state = {
-    books: [],
-    shelves: ['read', 'wantToRead', 'currentlyReading']
 
-  }
-
-  componentDidMount() {
-    this.fetchBooksFromDB()
-    booksAPI.getAll().then(books => {
-      this.setState({
-        books: books,
-     })
-    })
-  }
-
-  fetchBooksFromDB() {
-    booksAPI.getAll().then((books) => {
-
-        // sift and reformat data before storing it into state
-        // const books = formatData(booksAPIData)
-        this.setState({ books:[...books] });
-    })
-  }
-
-
-  moveBook(book, newShelf, response){
-    // handles adding a book to DB,
-    //  as well as moving existing book to different shelf
-    // console.log(book, newShelf, response);
-    console.log(response[newShelf].indexOf(book.id))
-    // Verify book was updated to newShelf in DB, before updating our state
-    if (response[newShelf].indexOf(book.id) !== -1) {
-
-      book.shelf = newShelf;
-      // remove book, then add it back to array, with its new shelf value
-      this.setState((prevState) => (
-        {
-          books: prevState.books
-          .filter((aBook) => (aBook.id !== book.id))
-          .concat([book])    // `concat([]) returns a new array, for chaining
-        }
-      ))
-
-    }
-  }
-
-  changeShelfHandler(book, newShelf) {
-    // update database
-    booksAPI.update(book, newShelf)
-      .then((response) => {
-
-        // then update state
-        if (newShelf === 'none') {
-          this.deleteBook(book, response);
-        } else {
-          console.log(book, newShelf, response)
-          this.moveBook(book, newShelf, response);
-        }
-      })
-  }
 
   camelToTitle = (str) => str
     .replace(/([A-Z])/g, (match) => ` ${match}`)
@@ -72,21 +14,29 @@ class Bookshelf extends Component<Props> {
 
   render(){
     return (
-      <Aux className={['book-shelf'].join(' ')}>
-        <div></div>
-          {this.state.shelves.map(shelf => (
-            this.state.books.filter(book => (book.shelf === shelf)).map((book, index) => (
+      <Aux>
+        <h2 className='text-center shelf-heading' style={{ marginBottom: 0 }}>Welcome To</h2>
+        <h1 className='text-center bold shelf-heading' style={{ marginTop: 0 }}>BOOK IT ALL HELL!</h1>
+          {this.props.shelves.map(shelf => (
+            this.props.books.filter(book => (book.shelf === shelf)).map((book, index) => (
               <Aux>
-                {index === 0 && <h2 className='details underline'>{this.camelToTitle(book.shelf)}</h2>}
+                {
+                  index === 0 && (
+                    <h2 className='details flex-row underline'>
+                      {this.camelToTitle(book.shelf)}
+                      {book.shelf === 'wantToRead' &&
+                        <Link to='/search'><i className='fa fa-plus clickable flex-col-center' style={{ height: 25, width: 25, borderRadius: 30, backgroundColor: '#fbbc05' }}/></Link>
+                      }
+                    </h2>
+                  )
+                }
                   <Book
-                    title={book.title}
-                    authors={book.authors}
+                    book={book}
                     key={index}
+                    keys={index}
                     index={index}
-                    shelf={shelf}
-                    image={book.imageLinks}
-                    click={this.changeShelfHandler}
-                    averageRating={book.averageRating}
+                    searchBool={false}
+                    click={this.props.click}
                     id={book.id}
                   />
               </Aux>

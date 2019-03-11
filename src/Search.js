@@ -1,59 +1,83 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom'
+import Book from './Book'
 import * as booksAPI from './BooksAPI.js'
 
-
-function Row(props) {
-  return React.createElement(props.type, {}, props.children)
+function Stars(props) {
+  return (
+    <span>
+      <div className="stars stars-outer">
+        <div className="stars-inner" style={{ width: (props.averageRating * 10) }}></div>
+      </div>
+    </span>
+  )
 }
 
-class Search extends React.Component {
+
+class Search extends React.Component<Props> {
 
   state = {
-    book: {
-      title: 'Details',
-      authors: ['John Denver'],
-      imageLinks: []
-    }
+    results: [],
+    search: 'art'
+  }
+
+  searchForBooks() {
+    booksAPI.search(this.state.search).then(searchResults => {
+      this.setState(() => ({
+        results: searchResults
+      }))
+    })
   }
 
   componentDidMount() {
-    const { handle } = this.props.match.params
-    const { title } = this.props.location.state || 'IOejDAAAQBAJ'
+    // console.log(this.state)
+    this.searchForBooks()
 
-    booksAPI.get('IOejDAAAQBAJ').then(book => {
-      console.log(book, "j")
-      this.setState({ book })
-    })
-
-      // booksAPI.update('IOejDAAAQBAJ', 'read').then(data => console.log(data.read))
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    console.log(prevProps.results, prevState.search, this.state.search)
+    if(prevState.search !== this.state.search) {
+      this.searchForBooks()
+    }
+  }
+
+  changeShelfHandler = (book, shelf) => {
+    booksAPI.update(book, shelf)
+      .then(booksAPI.getAll()
+      .then((books) => {
+        this.setState({ results: books })
+      }))
+  }
+
+  handlerChange = (event) => {
+    this.setState({ search: event.target.value })
+  }
 
   render() {
     // console.log(this.props.location.state)
 
-    const { title, subtitle, description, authors, puslisher, imageLinks } = this.state.book
     return (
       <div className='details'>
-          <div style={{ backgroundColor: 'white', padding: 15 }} className='two-col-grid'>
-            <span style={{ height: 300, margin: 15 }}>
-              <img alt={title} src={imageLinks.thumbnail} className={['book-image'].join(' ')}/>
-              <h3>Author</h3>
-              {authors.map(author => <Row type="h4">{author}</Row>)}
-            </span>
+        <form>
+          <input type='text' className='shadow-light' value={this.state.search} onChange={this.handlerChange} placeholder='Search...'/>
+        </form>
+        <div className='four-row-grid'>
 
-            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <span>
-                <h1>{title}</h1>
-                <h4>{subtitle}</h4>
-              </span>
-              <p>
-                {description}
-              </p>
-            </div>
-          </div>
-      </div>
+          {this.state.results.map((book, index) => (
+            <Book
+              book={book}
+              key={index}
+              keys={index}
+              index={index}
+              searchBool={true}
+              click={this.changeShelfHandler}
+              id={book.id}
+            />
+          ))}
+
+        </div>
+    </div>
     )
   }
 

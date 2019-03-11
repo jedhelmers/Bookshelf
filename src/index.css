@@ -24,7 +24,7 @@ body {
 h1, h2, h3, h4, h5, p {
   width: 100%;
   font-weight: 400;
-  margin: 3px;
+  margin: 5px 0px 0px 0px;
 }
 
 h1 {
@@ -97,17 +97,18 @@ input[type="text"] {
   outline: none;
   border: none;
   padding-right: 40px;
-  width: 300px;
+  width: 100%;
   height: 34px;
-  border-radius: 20px;
+  border-radius: 40px;
   padding-left: 10px;
-  background-color: rgba(237, 237, 237, .75);
+  background-color: rgba(255, 255, 255, .75);
   box-sizing: border-box;
 }
 
 input:focus {
-  width: 300px;
-  height: 34px;
+  width: 100%;
+  height: 50px;
+  font-size: 16px;
   border: 3px solid lightblue;
   box-sizing: border-box;
 }
@@ -159,6 +160,10 @@ i {
   box-shadow: 1px 1px 6px 0 rgba(0, 0, 0, .5)
 }
 
+.shadow-light {
+  box-shadow: 1px 1px 6px 0 rgba(0, 0, 0, .125)
+}
+
 .text-shadow {
   text-shadow: 1px 1px 6px rgba(0, 0, 0, .5)
 }
@@ -177,7 +182,7 @@ i {
   height: 100%;
   background-color: #373737;
   overflow: visible;
-  padding: 5px;
+  padding: 5px 5px 0 5px;
   margin: -10px 10px 0px 0 ;
 }
 
@@ -205,12 +210,16 @@ i {
 
 .featured-card {
   width: 100%;
-  height: 80px;
+  min-height: 80px;
   border: 1px solid #eeeeee;
   border-radius: 4px;
   background-color: #fff;
-  margin-bottom: 20px;
+  margin: 10px 0;
   overflow: hidden;
+}
+
+.featured-card:hover {
+  box-shadow: 1px 1px 12px 0 rgba(0, 0, 0, .25);
 }
 
 .card {
@@ -224,7 +233,7 @@ i {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   /* grid-template-rows: repeat(auto-fill, auto-fill); */
-  grid-gap: 30px;
+  grid-gap: 10px;
   grid-column-gap: 20px;
 }
 
@@ -308,6 +317,7 @@ i {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  text-align: center;
 }
 
 .flex-col-space-between {
@@ -361,4 +371,76 @@ i {
     z-index: 99;
     font-size: 10px;
     width: 15px;
+}
+
+.search {
+
+}
+
+.search-box {
+  font-size: 13px;
+  background-color: white;
+}
+
+.search-box:focus {
+  width: 100%;
+  outline: none;
+  border: 2px solid #08a1b6;
+}
+
+.search-btn {
+  height: 100%;
+  width: 4em;
+  margin-top: -2em;
+  position: absolute;
+  top: 50%;
+  right: 0.5rem;
+  opacity: 0.2;
+  background-color: transparent;
+  border: 0;
+  background-repeat: no-repeat;
+  background-size: 100%;
+}
+
+.search-btn:hover {
+  outline: none;
+  opacity: 0.4;
+  cursor: pointer;
+}
+.search-btn:focus {
+  outline: none;
+  opacity: 0.6;
+}
+
+ul.options {
+  display: block;
+  list-style: none;
+  width: 30rem;
+  transition: width 0.3s;
+  margin: auto;
+  position: relative;
+}
+
+ul.options li {
+  display: block;
+  background: white;
+  padding: 5px;
+  font-size: 12px;
+  width: 100%;
+  border-radius: 2px;
+}
+ul.options li:hover {
+  font-weight: bold;
+  color: #00b4cc;
+  cursor: pointer;
+  transition: 0.3s all;
+}
+
+ul.options li.option-active {
+  background: whitesmoke;
+  font-size: 1.5rem;
+  color: #00b4cc;
+}
+.no-options {
+  color: white;
 }
